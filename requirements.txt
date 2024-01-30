@@ -1,0 +1,14 @@
+numpy
+opencv-contrib-python
+requests
+Pillow
+pytorch_lightning==1.7.7
+torch
+torchdiffeq
+torchsde
+torchvision
+safetensors
+torchaudio
+librosa
+sentencepiece
+pandas
