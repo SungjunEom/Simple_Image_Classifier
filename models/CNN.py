@@ -4,11 +4,7 @@ import torch.nn as nn
 
 class Small(nn.Module):
     '''
-    Excerpt from the original paper:
-    A “small” network was used to evaluate the influence
-    of different components of the augmentation procedure on classification performance. It consists of
-    two convolutional layers with 64 filters each followed by a fully connected layer with 128 neurons.
-    This last layer is succeeded by a softmax layer, which serves as the network output. 
+    So small
     '''
     def __init__(self, activation=nn.ReLU(), num_class=50):
         super().__init__()

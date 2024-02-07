@@ -1,4 +1,4 @@
-from .stl_preprocessing import *
+import pickle
 from configs.train_config import *
 from torch.utils.data import Dataset
 from torchvision.transforms import v2

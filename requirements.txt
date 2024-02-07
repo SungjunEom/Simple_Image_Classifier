@@ -12,3 +12,4 @@ torchaudio
 librosa
 sentencepiece
 pandas
+wget

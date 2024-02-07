@@ -1,4 +1,4 @@
-from models.ExemplarCNN import *
+from models.CNN import *
 from datasets.dataset import *
 from configs.train_config import TrainConfigs
 import torch
