@@ -1,1 +1,1 @@
-Hi
+This repository contains a very simple image classifier and will be used for testing some adversarial attacks.
