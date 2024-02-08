@@ -4,7 +4,7 @@ This repository contains a very simple image classifier and will be used for tes
 ### Installation
 ```
 docker build -t simple_classifier .
-docker run --gpus all --rm -it --name container1 simple_classifier
+docker run --gpus all --rm -v [cloned location]:/workspace -it --name container1 simple_classifier
 ```
 
 ### Usage
