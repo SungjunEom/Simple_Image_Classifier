@@ -6,7 +6,7 @@ class Small(nn.Module):
     '''
     So small
     '''
-    def __init__(self, activation=nn.ReLU(), num_class=50):
+    def __init__(self, activation=nn.ReLU(), num_class=10):
         super().__init__()
         self.conv1 = nn.Conv2d(3, 64, 5, padding=2)
         self.conv2 = nn.Conv2d(64, 64, 5, padding=2)
@@ -25,3 +25,9 @@ class Small(nn.Module):
         x = self.dropout(self.linear1(x))
         x = self.linear2(x)
         return x
+
+
+if __name__ == '__main__':
+    from torchsummary import summary
+    model = Small().to(device='cuda:0')
+    summary(model,(3, 32, 32))

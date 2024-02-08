@@ -10,6 +10,7 @@ import wandb
 configs = TrainConfigs().parse()
 isWandb = configs.wandb
 
+
 if isWandb:
     wandb.init(
         # set the wandb project where this run will be logged
@@ -23,6 +24,7 @@ if isWandb:
         "epochs": configs.epochs,
         }
     )
+
 
 def main():
     '''
@@ -51,9 +53,9 @@ def main():
     
 
     model = Small(num_class=configs.class_num).to(device)
+    model.load_state_dict(torch.load('./naive.pt'))
 
-    train_dataset = CifarDataset(data_path=train_data_path[0])
-    train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=0)
+
     test_dataset = CifarDataset(data_path=test_data_path)
     test_dataloader = DataLoader(test_dataset, batch_size=1, shuffle=True, num_workers=0)
     
@@ -63,35 +65,7 @@ def main():
     # scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.99)
 
     for epoch in range(epochs):
-        print('Epoch:', epoch)
-        model.train()
-        for X, y in tqdm(train_dataloader):
-            optimizer.zero_grad()
-            X = X.to(device)
-            y = y.to(device)
-            pred = model(X)
-            loss = loss_fn(pred, y)
-            loss.backward()
-            optimizer.step()
-
-            if isWandb:
-                wandb.log({"loss": loss})
-
-        loss = 0
-        n = 0
-        for X, y in test_dataloader:
-            model.eval()
-            X = X.to(device)
-            y = y.to(device)
-            pred = model(X)
-            loss += loss_fn(pred, y)
-            n += 1
-        loss = loss / n
-        print('Loss: ',loss)
-        if isWandb:
-            wandb.log({"eval": loss})
-
-    torch.save(model.state_dict(), './naive.pt')
+        pass
 
 
 
