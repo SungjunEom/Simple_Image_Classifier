@@ -5,15 +5,21 @@ import torch
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 import wandb
+from pyhessian import hessian
 
 
 configs = TrainConfigs().parse()
 isWandb = configs.wandb
+device = configs.device
+lr = configs.lr
+loss_fn = configs.loss_fn.to(device)
+epochs = configs.epochs
+batch_size = configs.batch_size
 
 if isWandb:
     wandb.init(
         # set the wandb project where this run will be logged
-        project="First run",
+        project="Simple Image Classifier",
         
         # track hyperparameters and run metadata
         config={
@@ -21,8 +27,16 @@ if isWandb:
         "architecture": "Small",
         "dataset": "Cifar10",
         "epochs": configs.epochs,
+        "batch_size": configs.batch_size,
         }
     )
+
+def sharpness(model, X, y):
+
+    hessian_comp = hessian(model, loss_fn, data=(X, y), cuda=True)
+    top_eigenvalue, _ = hessian_comp.eigenvalues(top_n=1)
+
+    return top_eigenvalue
 
 def main():
     '''
@@ -42,14 +56,7 @@ def main():
     ]
 
     test_data_path = './datasets/data/cifar-10/cifar-10-batches-py/test_batch'
-
-    device = configs.device
-    lr = configs.lr
-    loss_fn = configs.loss_fn.to(device)
-    epochs = configs.epochs
-    batch_size = configs.batch_size
-    
-
+  
     model = Small(num_class=configs.class_num).to(device)
 
     train_dataset = CifarDataset(data_path=train_data_path[0])
@@ -88,8 +95,12 @@ def main():
             n += 1
         loss = loss / n
         print('Loss: ',loss)
+
+        sharp = sharpness(model, X, y)
+
         if isWandb:
             wandb.log({"eval": loss})
+            wandb.log({"sharpness": sharp[0]})
 
     torch.save(model.state_dict(), './naive.pt')
 
