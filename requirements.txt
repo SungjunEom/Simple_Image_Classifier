@@ -13,3 +13,4 @@ librosa
 sentencepiece
 pandas
 wget
+pyhessian
