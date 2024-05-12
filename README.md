@@ -18,3 +18,6 @@ To train a model with 13 epochs and wandb:
 ```
 python train.py --wandb True --epochs 13
 ```
+
+### Datasets
+https://docs.mosaicml.com/projects/streaming/en/stable/
