@@ -2,7 +2,8 @@ import pickle
 from torch.utils.data import Dataset
 import torch
 import numpy as np
-
+# from streaming.base.format.mds.encodings import Encoding, _encodings
+# from streaming import StreamingDataset
 
 
 class CifarDataset(Dataset):

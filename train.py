@@ -1,5 +1,6 @@
 from models.CNN import *
 from datasets.dataset import *
+from utils import *
 from configs.train_config import TrainConfigs
 import torch
 from torch.utils.data import DataLoader
@@ -25,7 +26,7 @@ if isWandb:
         config={
         "learning_rate": configs.lr,
         "architecture": "Small",
-        "dataset": "Cifar10",
+        "dataset": configs.dataset_name,
         "epochs": configs.epochs,
         "batch_size": configs.batch_size,
         }
@@ -45,27 +46,10 @@ def main():
     assert torch.cuda.is_available(), 'No GPU detected'
     torch.manual_seed(configs.seed)
 
-
     # torch.cuda.set_device(configs.device)
-    train_data_path = [
-        './datasets/data/cifar-10/cifar-10-batches-py/data_batch_1',
-        './datasets/data/cifar-10/cifar-10-batches-py/data_batch_2',
-        './datasets/data/cifar-10/cifar-10-batches-py/data_batch_3',
-        './datasets/data/cifar-10/cifar-10-batches-py/data_batch_4',
-        './datasets/data/cifar-10/cifar-10-batches-py/data_batch_5'
-    ]
-
-    test_data_path = './datasets/data/cifar-10/cifar-10-batches-py/test_batch'
   
     model = Small(num_class=configs.class_num).to(device)
-
-    train_dataset = CifarDataset(data_path=train_data_path[0])
-    train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=0)
-    test_dataset = CifarDataset(data_path=test_data_path)
-    test_dataloader = DataLoader(test_dataset, batch_size=1, shuffle=True, num_workers=0)
-    
-
-
+    train_dataloader, test_dataloader = make_loader(configs.dataset_name)
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)
     # scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.99)
 

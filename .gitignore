@@ -7,3 +7,4 @@ __pycache__/
 wandb/
 *.pt
 .ipynb_checkpoints/
+local_train_dir/
