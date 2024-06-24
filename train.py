@@ -3,10 +3,8 @@ from datasets.dataset import *
 from utils import *
 from configs.train_config import TrainConfigs
 import torch
-from torch.utils.data import DataLoader
 from tqdm import tqdm
 import wandb
-from pyhessian import hessian
 
 
 configs = TrainConfigs().parse()
@@ -20,7 +18,7 @@ batch_size = configs.batch_size
 if isWandb:
     wandb.init(
         # set the wandb project where this run will be logged
-        project="Simple Image Classifier",
+        project=configs.project_name,
         
         # track hyperparameters and run metadata
         config={
@@ -32,13 +30,6 @@ if isWandb:
         }
     )
 
-def sharpness(model, X, y):
-
-    hessian_comp = hessian(model, loss_fn, data=(X, y), cuda=True)
-    top_eigenvalue, _ = hessian_comp.eigenvalues(top_n=1)
-
-    return top_eigenvalue
-
 def main():
     '''
     Train a new model
@@ -48,7 +39,7 @@ def main():
 
     # torch.cuda.set_device(configs.device)
   
-    model = Small(num_class=configs.class_num).to(device)
+    model = Medium(num_class=configs.class_num).to(device)
     train_dataloader, test_dataloader = make_loader(configs.dataset_name)
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)
     # scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.99)
@@ -80,11 +71,8 @@ def main():
         loss = loss / n
         print('Loss: ',loss)
 
-        sharp = sharpness(model, X, y)
-
         if isWandb:
             wandb.log({"eval": loss})
-            wandb.log({"sharpness": sharp[0]})
 
     torch.save(model.state_dict(), './naive.pt')
 
