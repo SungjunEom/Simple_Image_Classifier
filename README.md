@@ -1,5 +1,5 @@
 # Simple Image Classifier
-This repository contains a very simple image classifier and will be used for testing some adversarial attacks and more.
+This repository contains a very simple image classifier boilerplate.
 
 ### Installation
 
