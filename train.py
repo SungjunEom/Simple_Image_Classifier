@@ -5,6 +5,7 @@ from configs.train_config import TrainConfigs
 import torch
 from tqdm import tqdm
 import wandb
+from safetensors import SafeTensor
 
 
 configs = TrainConfigs().parse()
@@ -74,10 +75,7 @@ def main():
         if isWandb:
             wandb.log({"eval": loss})
 
-    torch.save(model.state_dict(), './naive.pt')
-
-
-
+    SafeTensor.save('./naive.safetensors', model.state_dict())
 
 
 if __name__=='__main__':
