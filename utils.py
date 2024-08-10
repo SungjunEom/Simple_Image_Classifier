@@ -59,11 +59,23 @@ def make_loader(name):
         return train_dataloader
     
     elif name=='synthetic-sdxl':
-        train_data_path = './datasets/data/train'
-        test_data_path = './datasets/data/test'
+        train_data_path = './datasets/data/synthetic-sdxl/train'
+        test_data_path = './datasets/data/synthetic-sdxl/test'
         
         train_dataset = SyntheticDataset(train_data_path)
         test_dataset = SyntheticDataset(test_data_path)
+
+        train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=0)
+        test_dataloader = DataLoader(test_dataset, batch_size=1, shuffle=True, num_workers=0)
+
+        return train_dataloader, test_dataloader
+
+    elif name=='MNIST':
+        train_data_path = './datasets/data/MNIST/train'
+        test_data_path = './datasets/data/MNIST/test'
+        
+        # train_dataset = SyntheticDataset(train_data_path)
+        # test_dataset = SyntheticDataset(test_data_path)
 
         train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=0)
         test_dataloader = DataLoader(test_dataset, batch_size=1, shuffle=True, num_workers=0)
