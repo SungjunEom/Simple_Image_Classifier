@@ -5,8 +5,7 @@ from configs.train_config import TrainConfigs
 import torch
 from tqdm import tqdm
 import wandb
-from safetensors import SafeTensor
-
+from safetensors.torch import save_file
 
 configs = TrainConfigs().parse()
 isWandb = configs.wandb
@@ -18,16 +17,13 @@ batch_size = configs.batch_size
 
 if isWandb:
     wandb.init(
-        # set the wandb project where this run will be logged
         project=configs.project_name,
-        
-        # track hyperparameters and run metadata
         config={
-        "learning_rate": configs.lr,
-        "architecture": "Small",
-        "dataset": configs.dataset_name,
-        "epochs": configs.epochs,
-        "batch_size": configs.batch_size,
+            "learning_rate": lr,
+            "architecture": "Medium",
+            "dataset": configs.dataset_name,
+            "epochs": epochs,
+            "batch_size": batch_size,
         }
     )
 
@@ -37,13 +33,10 @@ def main():
     '''
     assert torch.cuda.is_available(), 'No GPU detected'
     torch.manual_seed(configs.seed)
-
-    # torch.cuda.set_device(configs.device)
   
     model = Medium(num_class=configs.class_num).to(device)
     train_dataloader, test_dataloader = make_loader(configs.dataset_name)
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)
-    # scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.99)
 
     for epoch in range(epochs):
         print('Epoch:', epoch)
@@ -58,24 +51,26 @@ def main():
             optimizer.step()
 
             if isWandb:
-                wandb.log({"loss": loss})
+                wandb.log({"loss": loss.item()})
 
-        loss = 0
+        # Evaluation phase
+        model.eval()
+        eval_loss = 0.0
         n = 0
-        for X, y in test_dataloader:
-            model.eval()
-            X = X.to(device)
-            y = y.to(device)
-            pred = model(X)
-            loss += loss_fn(pred, y)
-            n += 1
-        loss = loss / n
-        print('Loss: ',loss)
+        with torch.no_grad():
+            for X, y in test_dataloader:
+                X = X.to(device)
+                y = y.to(device)
+                pred = model(X)
+                eval_loss += loss_fn(pred, y).item()
+                n += 1
+        avg_loss = eval_loss / n if n > 0 else 0
+        print('Loss: ', avg_loss)
 
         if isWandb:
-            wandb.log({"eval": loss})
+            wandb.log({"eval": avg_loss})
 
-    SafeTensor.save('./naive.safetensors', model.state_dict())
+    save_file(model.state_dict(), './naive.safetensors')
 
 
 if __name__=='__main__':

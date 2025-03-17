@@ -6,5 +6,6 @@ configs/__pycache__/
 __pycache__/
 wandb/
 *.pt
+*.safetensors
 .ipynb_checkpoints/
 local_train_dir/
